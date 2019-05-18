@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Application.h"
+#include "GraphNode.h"
 
 const int MAX_SIZE = 500;
 const int TEST_SIZE = 132;
@@ -20,19 +21,17 @@ int main() {
 
     int num_pairs = (TEST_SIZE*(TEST_SIZE-1))/2;
     std::cout << num_pairs << std::endl;
-    std::pair <int, std::pair <int,int>> distances[num_pairs];
-
+    std::vector <std::pair <int, std::pair <int,int>>> distances;
+    distances.resize(num_pairs);
     int id = 0;
     for(int i = 1; i < TEST_SIZE; i++) {
-        id += i-1;
-        for(int j = 0; j < TEST_SIZE; j++) {
-            if(i > j)
-                distances[id+j] = {distance(apps[i],apps[j]),{i,j}};
+        id += i - 1;
+        for (int j = 0; j < TEST_SIZE; j++) {
+            if (i > j)
+                distances[id + j] = {distance(apps[i], apps[j]), {i, j}};
         }
     }
-
-
-    std::sort(distances, distances+num_pairs);
+    std::sort(distances.begin(), distances.end());
     std::cout << "The smallest distances:\n";
     for(int i = 0; i < SORT_SIZE; i++) {
         std::cout << "{" << distances[i].first << ", (" << distances[i].second.first << ", " << distances[i].second.second << ")}\n";
@@ -42,5 +41,13 @@ int main() {
         std::cout << "{" << distances[i].first << ", (" << distances[i].second.first << ", " << distances[i].second.second << ")}\n";
     }
 
+    Graph* G = new Graph(distances,TEST_SIZE,50);
+    vector <bool> visited;
+    visited.resize(TEST_SIZE,false);
+    for(int i = 0; i < TEST_SIZE; i++){
+        if(!visited[i])
+            dfs_component(i);
+        std::cout << "\n";
+    }
     return 0;
 }

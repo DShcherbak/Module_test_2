@@ -83,8 +83,10 @@ double distance(Application* a, Application* b){
     for(;i < a->functionality.size(); i++){
         sum += power(a->functionality[i].second,2);
     }
+    sum-=0.1;
     double p = std::min(a->ar,b->ar)/5.0-3*VARIANT;
     double res = pow((double)sum,p);
+    std::cout << res;
     return -log(res);
 }
 
