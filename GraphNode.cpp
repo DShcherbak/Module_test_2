@@ -1,9 +1,8 @@
-##include <iostream>
+#include <iostream>
 #include <vector>
 #include <cmath>
 #include <random>
 #include <algorithm>
-#include <priority_queue>
 #include <queue> 
 #include "Application.h"
 
@@ -22,8 +21,8 @@ struct Graph{
         vertices = v;
         std::pair <int, std::pair <int,int>> p;
         
-        for(int i = 0; i < vertices; i++) {
-            for (int j = 0; j < vertices; j++) {
+        for(int i = 0; i < vertices; i++)
+            for (int j = 0; j < vertices; j++)
                 min_dist[i][j] = inf;
 
         for(int i = 0; i < distances.size(); i++){
@@ -41,9 +40,10 @@ struct Graph{
         double d;
         vertices = apps.size();
 
-        for(int i = 0; i < vertices; i++) {
-            for (int j = 0; j < vertices; j++) {
+        for(int i = 0; i < vertices; i++)
+            for (int j = 0; j < vertices; j++)
                 min_dist[i][j] = inf;
+
 
         for(int i = 1; i < vertices; i++) {
             for (int j = 0; j < vertices; j++) {
@@ -76,28 +76,30 @@ void dfs_component(Graph* G, int cur, std::vector <bool> &visited){
             dfs_component(G,i,visited);
 }
 
-void Dijkstra(Graph* G, int start){
+void Dijkstra(Graph* G, int st){
 	std::vector <bool> visited;
 	
-	int cur; int v = G.vertices;
-	visited.resize(v);
-    min_dist[start][start] = 0;
-    priority_queue<pair<double,int>> Q;
-    for(int i = 0; i < v; i++){
-    	min_dist[st][i] = adj[st][i];
-    	Q.enqueue({min_dist[st][i],i});
+	int cur, vert = G->vertices, v = -1, d = inf;
+	visited.resize(vert);
+    G->min_dist[st][st] = 0;
+    while(true){
+        v = -1;
+        d = inf;
+        for(int i = 0; i < vert; i++) {
+            if (!visited[i] && G->min_dist[st][i] < d) {
+                d = G->min_dist[st][i];
+                v = i;
+            }
+        }
+        if(v == -1)
+            break;
+        visited[v] = true;
+        for(int i = 0; i < vert; i++) {
+            if(G->adj[v][i] != -1) {
+                G->min_dist[st][i] = std::min(G->min_dist[st][i],G->min_dist[st][v] + G->adj[v][i]);
+            }
+        }
     }
-    visited[start]
-    while(!Q.empty()){
-    	cur = Q.pop(). second ();
-    	for(int i = 0; i < v; i++){
-    		if(!visited[i]){
-    			min_dist[start][i] = 
-    				std::min(min_dist[start][i],
-    		min_dist[start][cur]+
-    			adj[cur][i]);
-    			Q.push({min_dist[start][i], i});
-    		}
-    	}
-    }
+}
+
 }

@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Application.h"
 #include "GraphNode.h"
+#include "Binary_tree.h"
 
 const int MAX_SIZE = 500;
 const int TEST_SIZE = 132;
@@ -42,7 +43,7 @@ int main() {
     }
 
     Graph* G = new Graph(distances,TEST_SIZE,50);
-    vector <bool> visited;
+    std::vector <bool> visited;
     visited.resize(TEST_SIZE,false);
     for(int i = 0; i < TEST_SIZE; i++){
         if(!visited[i])
