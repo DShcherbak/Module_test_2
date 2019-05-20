@@ -110,15 +110,35 @@ void print_tree_right(std::vector <Node*> roots){
     }
 }
 
-int debth(Node* cur){
+int depth(Node* cur){
     if(cur == nullptr)
         return 0;
     if(cur->left == nullptr && cur->right == nullptr){
         return 1;
     }
-    return 1+std::max(debth(cur->left),debth(cur->right));
+    return 1+std::max(depth(cur->left),depth(cur->right));
 }
 
+void delete_node_by_value(Node* cur, int val){
+    if(cur->dist == val){
+        if(cur->parent == nullptr) {
+            cur->right->parent = cur->left;
+        }
+    }
+}
+
+void delete_root_by_value(Node* root, int val){
+    if(root->dist == val){
+        //delete
+    }
+    else if(root->dist < val)
+        delete_node_by_value(root->left,val);
+    else
+        delete_node_by_value(root->right,val);
+}
+
+
+/*
 void print_node_tree(Node* cur, int d, int right){
 
 }
@@ -130,5 +150,5 @@ void print_as_tree(std::vector <Node*> roots){
 
     }
 }
-
+*/
 
