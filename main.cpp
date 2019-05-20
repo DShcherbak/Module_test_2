@@ -7,8 +7,8 @@ const int MAX_SIZE = 500;
 const int TEST_SIZE = 132;
 const int SORT_SIZE = 14;
 
-int main() {
-    std::vector <Application*> apps;
+std::vector <std::pair <int, std::pair <int,int>>> Task1(std::vector <Application*> &apps) {
+
 
     std::cout << "Task 1:\n";
 
@@ -47,8 +47,27 @@ int main() {
     visited.resize(TEST_SIZE,false);
     for(int i = 0; i < TEST_SIZE; i++){
         if(!visited[i])
-            dfs_component(i);
+        std::cout << i << "\n";//    dfs_component(i);
         std::cout << "\n";
     }
+    return distances;
+}
+
+void Task2(){}
+void Task3(){}
+
+void Task4(std::vector <Application*> &apps, std::vector <std::pair <int, std::pair <int,int>>> distances){
+    std::cout << "Task 4:\n";
+    std::vector <Node*> roots = build_tree(apps);
+
+}
+
+int main(){
+    std::vector <Application*> apps;
+    std::vector <std::pair <int, std::pair <int,int>>> distances;
+    distances = Task1(apps);
+    Task2();
+    Task3();
+    Task4(apps,distances);
     return 0;
 }
