@@ -69,7 +69,6 @@ void random_shuffle(std::vector <edge> &e) {
 
 Node* build_tree(std::vector <Application*> apps){
     int n = apps.size();
-    std::cout << n << " elements.\n";
     Node* root = new Node(apps[1],apps[0],distance(apps[1],apps[0]));
     for(int i = 2; i < n; i++){
         for(int j = 0; j < i; j++){
@@ -148,16 +147,60 @@ void delete_root_by_value(Node* root, int val){
 }
 
 
-void print_tree(Node *root, int level = 0) {
-    if (!level) std::cout << "Tree:" << std::endl;
-    if (root != nullptr) {
-        std::cout << '|';
-        for (int i = 0; i < level; i++)
-            std::cout << '\t' << '|';
-        std::cout << root->dist << std::endl;
-            print_tree(root->left, level + 1);
-            print_tree(root->right, level + 1);
+void print_tree(Node *root, int depth = 0) {
+    if (!root)
+        return;
+    std::cout << '|';
+    for (int i = 0; i < depth; i++)
+        std::cout << '\t' << '|';
+    std::cout << root->dist << std::endl;
+    print_tree(root->left, depth + 1);
+    print_tree(root->right, depth + 1);
+}
+
+void search_precision(Node* root, int left, int right){
+    if(root->dist < left){
+        if(root->right)
+            search_precision(root->right,left,right);
+    }
+    else if(root->dist > right){
+        if(root->left)
+            search_precision(root->left,left,right);
+    }
+    else{
+        std::cout << "(" << root->dist << ")\n";
+        if(root->right)
+            search_precision(root->right,left,right);
+        if(root->left)
+            search_precision(root->left,left,right);
     }
 }
 
-
+std::vector <double> search_precision_vec(Node* root , double left, double right){
+    std::vector <double> res;
+    std::vector <double> nw;
+    if(root->dist < left){
+        if(root->right){
+            nw = search_precision_vec(root->right,left,right);
+            res.insert(res.end(),nw.begin(),nw.end());
+        }
+    }
+    else if(root->dist > right){
+        if(root->left){
+            nw = search_precision_vec(root->left,left,right);
+            res.insert(res.end(),nw.begin(),nw.end());
+        }
+    }
+    else{
+        res.push_back(root->dist);
+        if(root->right){
+            nw = search_precision_vec(root->right,left,right);
+            res.insert(res.end(),nw.begin(),nw.end());
+        }
+        if(root->left){
+            nw = search_precision_vec(root->left,left,right);
+            res.insert(res.end(),nw.begin(),nw.end());
+        }
+    }
+    return res;
+}

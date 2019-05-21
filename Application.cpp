@@ -86,7 +86,6 @@ double distance(Application* a, Application* b){
     sum-=0.1;
     double p = std::min(a->ar,b->ar)/5.0-3*VARIANT;
     double res = pow((double)sum,p);
-    std::cout << res;
     return -log(res);
 }
 
@@ -152,7 +151,7 @@ void sort(std::vector <Application*> &a, int left, int right){
 
 void print(std::vector <Application*> apps){
     for(auto a : apps){
-        std::cout << a << std::endl;
+        std::cout << a->mark << std::endl;
     }
 }
 

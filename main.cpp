@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Application.h"
+#include "Application_tree.h"
 #include "GraphNode.h"
 #include "Binary_tree.h"
 
@@ -11,10 +12,16 @@ std::vector <std::pair <int, std::pair <int,int>>> Task1(std::vector <Applicatio
 
 
     std::cout << "Task 1:\n";
-
+    double pos;
     apps.resize(TEST_SIZE);
+    int father = -1;
     for(int i = 0; i < TEST_SIZE; i++){
         apps[i] = create_random_application();
+        pos = randomInt(0,1000)*0.001;
+        if(pos > probability){
+            father = randomInt(0,i-1);
+            apps[i]->prototype = apps[father];
+        }
 
     }
     sort(apps,0,apps.size()-1);
@@ -59,13 +66,13 @@ void Task3(){}
 void Task4(){
     std::vector <Application*> apps;
     std::cout << "Task 4:\n";
-    int n = 20;
+    int n = 9;
     apps.resize(n);
     for(int i = 0; i < n; i++){
         apps[i] = create_random_application();
     }
     sort(apps,0,n-1);
-    print(apps);
+   // print(apps);
     Node* root = build_tree(apps);
     int dep = depth(root);
     std::cout << "Done. Depth is " << dep << "\n";
@@ -76,16 +83,21 @@ void Task4(){
     std::cin >> val;
     std::cout << "Enter the precision:";
     std::cin >> eps;
-    search_precision(root,val-eps,val+eps);
+    std::cout << "Values in [" << val-eps << ", " << val+eps << "]:\n";
+    std::vector <double> src = search_precision_vec(root,val-eps,val+eps);
+    sort(src.begin(),src.end());
+    for(double d : src)
+        std::cout << "(" << d << ")\n";
+    std::cout << "Thanks for your attention! :) \n";
 
 }
 
 int main(){
     std::vector <Application*> apps;
     std::vector <std::pair <int, std::pair <int,int>>> distances;
-    distances = Task1(apps);
-    Task2();
-    Task3();
+  //  distances = Task1(apps);
+  //  Task2();
+  //  Task3();
     Task4();
     return 0;
 }
