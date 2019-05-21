@@ -14,14 +14,14 @@ const double probability = 0.1;
 
 
 
-struct Node{
+struct Binary_Node{
     Application *a, *b;
     double dist;
-    Node* left, *right, *parent;
+    Binary_Node* left, *right, *parent;
 
 
 
-    Node(Application * _a, Application * _b, double _d){
+    Binary_Node(Application * _a, Application * _b, double _d){
         a = _a;
         b = _b;
         dist = _d;
@@ -30,31 +30,31 @@ struct Node{
         parent = nullptr;
     }
 
-    bool operator <(Node* a){
+    bool operator <(Binary_Node* a){
         return a->dist < this->dist;
     }
 };
 
-void add_node(Node* cur, Node* new_node){
-  //  std::cout << "Adding to " << cur->dist << std::endl;
-    if(cur == nullptr){
-        cur = new_node;
+void add_node(Binary_Node* root, Binary_Node* new_node){
+  //  std::cout << "Adding to " << root->dist << std::endl;
+    if(root == nullptr){
+        root = new_node;
         return;
     }
-    if(cur->dist < new_node->dist){
-        if(cur->right)
-            add_node(cur->right,new_node);
+    if(root->dist < new_node->dist){
+        if(root->right)
+            add_node(root->right,new_node);
         else{
-            cur->right = new_node;
-            new_node->parent = cur;
+            root->right = new_node;
+            new_node->parent = root;
         }
     }
     else{
-        if(cur->left)
-            add_node(cur->left,new_node);
+        if(root->left)
+            add_node(root->left,new_node);
         else{
-            cur->left = new_node;
-            new_node->parent = cur;
+            root->left = new_node;
+            new_node->parent = root;
         }
     }
 
@@ -67,12 +67,12 @@ void random_shuffle(std::vector <edge> &e) {
     std::shuffle(e.begin(), e.end(), g);
 }
 
-Node* build_tree(std::vector <Application*> apps){
+Binary_Node* build_binary_tree(std::vector <Application*> apps){
     int n = apps.size();
-    Node* root = new Node(apps[1],apps[0],distance(apps[1],apps[0]));
+    Binary_Node* root = new Binary_Node(apps[1],apps[0],distance(apps[1],apps[0]));
     for(int i = 2; i < n; i++){
         for(int j = 0; j < i; j++){
-            Node* new_node = new Node(apps[i],apps[j],distance(apps[i],apps[j]));
+            Binary_Node* new_node = new Binary_Node(apps[i],apps[j],distance(apps[i],apps[j]));
             add_node(root,new_node);
         }
     }
@@ -80,22 +80,22 @@ Node* build_tree(std::vector <Application*> apps){
 }
 
 
-Node* build_tree(std::vector <Application*> apps, std::vector <edge> distances){
+Binary_Node* build__binary_tree(std::vector <Application*> apps, std::vector <edge> distances){
     int n = distances.size();
     random_shuffle(distances);
     edge p = distances[0];
-    Node* root = new Node(apps[p.from],apps[p.to],p.cost);
+    Binary_Node* root = new Binary_Node(apps[p.from],apps[p.to],p.cost);
     for(int i = 1; i <n; i++){
         p = distances[i];
-        Node* new_node = new Node(apps[p.from],apps[p.to],p.cost);
+        Binary_Node* new_node = new Binary_Node(apps[p.from],apps[p.to],p.cost);
         add_node(root,new_node);
     }
     return root;
 
 }
 
-int create_new_node(std::vector <Node*> root, Application* a, Application* b){
-    Node* new_node = new Node(a,b,distance(a,b));
+int create_new_node(std::vector <Binary_Node*> root, Application* a, Application* b){
+    Binary_Node* new_node = new Binary_Node(a,b,distance(a,b));
     if(randomInt(1,1000)*0.1/100.0 < probability)
         root.push_back(new_node);
     else{
@@ -104,39 +104,39 @@ int create_new_node(std::vector <Node*> root, Application* a, Application* b){
     }
 }
 
-void print_node_right(Node* cur){
-    std::cout << cur->dist << " ";
-    if(cur->left)
-        print_node_right(cur->left);
-    if(cur->right)
-        print_node_right(cur->right);
+void print_binary_tree_right(Binary_Node* root){
+    std::cout << root->dist << " ";
+    if(root->left)
+        print_binary_tree_right(root->left);
+    if(root->right)
+        print_binary_tree_right(root->right);
 }
 
-void print_tree_right(std::vector <Node*> roots){
+void print_tree_right(std::vector <Binary_Node*> roots){
     int n = roots.size();
     for(int i = 0; i < n; i++){
-        print_node_right(roots[i]);
+        print_binary_tree_right(roots[i]);
     }
 }
 
-int depth(Node* cur){
-    if(cur == nullptr)
+int depth(Binary_Node* root){
+    if(root == nullptr)
         return 0;
-    if(cur->left == nullptr && cur->right == nullptr){
+    if(root->left == nullptr && root->right == nullptr){
         return 1;
     }
-    return 1+std::max(depth(cur->left),depth(cur->right));
+    return 1+std::max(depth(root->left),depth(root->right));
 }
 
-void delete_node_by_value(Node* cur, int val){
-    if(cur->dist == val){
-        if(cur->parent == nullptr) {
-            cur->right->parent = cur->left;
+void delete_node_by_value(Binary_Node* root, int val){
+    if(root->dist == val){
+        if(root->parent == nullptr) {
+            root->right->parent = root->left;
         }
     }
 }
 
-void delete_root_by_value(Node* root, int val){
+void delete_root_by_value(Binary_Node* root, int val){
     if(root->dist == val){
         //delete
     }
@@ -147,7 +147,7 @@ void delete_root_by_value(Node* root, int val){
 }
 
 
-void print_tree(Node *root, int depth = 0) {
+void print_tree(Binary_Node *root, int depth = 0) {
     if (!root)
         return;
     std::cout << '|';
@@ -158,7 +158,7 @@ void print_tree(Node *root, int depth = 0) {
     print_tree(root->right, depth + 1);
 }
 
-void search_precision(Node* root, int left, int right){
+void search_precision(Binary_Node* root, int left, int right){
     if(root->dist < left){
         if(root->right)
             search_precision(root->right,left,right);
@@ -176,7 +176,7 @@ void search_precision(Node* root, int left, int right){
     }
 }
 
-std::vector <double> search_precision_vec(Node* root , double left, double right){
+std::vector <double> search_precision_vec(Binary_Node* root , double left, double right){
     std::vector <double> res;
     std::vector <double> nw;
     if(root->dist < left){

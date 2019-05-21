@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Application.h"
-#include "Application_tree.h"
+//#include "Application_tree.h"
 #include "GraphNode.h"
 #include "Binary_tree.h"
 
@@ -73,7 +73,7 @@ void Task4(){
     }
     sort(apps,0,n-1);
    // print(apps);
-    Node* root = build_tree(apps);
+    Binary_Node* root = build_binary_tree(apps);
     int dep = depth(root);
     std::cout << "Done. Depth is " << dep << "\n";
     print_tree(root);

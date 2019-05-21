@@ -10,69 +10,95 @@ const double probability = 0.1;
 
 
 struct Node{
-    Application *a, *b;
-    double dist;
-    Node* left, *right, *parent;
+    Application *app;
+    Node *parent;
+    int height, cnt_child, cnt_tree,min_mark, max_mark, sum;
+    std::vector <Node*> children;
 
-
-
-    Node(Application * _a, Application * _b, double _d){
-        a = _a;
-        b = _b;
-        dist = _d;
-        left = nullptr;
-        right = nullptr;
+    Node(Application * _a){
+        app = _a;
+        height = 1;
+        cnt_child = 0;
+        cnt_tree = 1;
+        min_mark = app->mark;
+        max_mark = app->mark;
+        sum = app->mark;
         parent = nullptr;
     }
 
-    bool operator <(Node* a){
-        return a->dist < this->dist;
+    double average(){
+        return 1.0*sum/cnt_tree;
     }
+
+
 };
 
-void add_node(Node* cur, Node* new_node){
-    if(cur == nullptr){
-        cur = new_node;
-        return;
-    }
-    if(cur < new_node){
-        if(cur->right)
-            add_node(cur->right,new_node);
-        else{
-            cur->right = new_node;
-            new_node->parent = cur;
-        }
+bool add_node(Node* root, Node* new_node){
+    if(root == nullptr)
+        return false;
+    if(root == new_node->parent){
+        root->children.push_back(new_node);
+        if(!root->cnt_child)
+            root->height = 2;
+        root->cnt_child++;
+
+        root->min_mark = std::min(root->min_mark,new_node->min_mark);
+        root->max_mark = std::max(root->max_mark,new_node->max_mark);
+        root->sum += new_node->sum;
+        root->cnt_tree++;
     }
     else{
-        if(cur->left)
-            add_node(cur->left,new_node);
-        else{
-            cur->left = new_node;
-            new_node->parent = cur;
+        for(auto ch : root->children){
+            root->sum -= ch->sum;
+            if(add_node(ch,new_node)){
+                root->sum += ch->sum;
+                root->height = std::max(root->height,1+ch->height);
+                root->min_mark = std::min(root->min_mark,ch->min_mark);
+                root->max_mark = std::max(root->max_mark,ch->max_mark);
+                root->cnt_tree++;
+                break;
+            }
+            root->sum += ch->sum;
         }
     }
+        return (add_node(root->left,new_node) | add_node(root->right,new_node));
 
 }
 
 std::vector <Node*> build_tree(std::vector <Application*> apps){
-    std::vector <Node*> root;
-
-    int n = apps.size();
+    std::vector <Node*> roots;
+    int n = apps.size()
     for(int i = 0; i <n; i++){
-        for(int j = 0; j < n; j++){
-            if(i==j)
-                continue;
-            Node* new_node = new Node(apps[i],apps[j],distance(apps[i],apps[j]));
-            if(randomInt(1,1000)*0.1/100.0 < probability)
-                root.push_back(new_node);
-            else{
-                int par = randomInt(0,root.size()-1);
-                add_node(root[par],new_node);
+        Node* new_node = new Node(apps[i]);
+        if(apps[i]->prototype == nullptr)
+            roots.push_back(new_node);
+        else{
+            for(int i = 0, k = roots.size(); i < k; i++){
+                if(add_node(roots[i],new_node))
+                    break;
             }
         }
     }
+    return roots;
 }
 
+void swap_trees(Node* a, Node* b){
+    if(!a->parent && !b->parent){
+        swap(a,b);
+        return;
+    }
+    Node* pa, *pb;
+    pa = a->parent;
+    pb = b->parent;
+}
+
+void swap_min_max_trees(Node* root){
+    Node* min_tree = find_min_tree(root);
+    Node* max_tree = find_max_tree(root);
+    swap_trees(min_tree, max_tree);
+
+}
+/*
 std::vector <Node*> build_tree(std::vector <Application*> apps, std::vector <std::pair <int, std::pair <int,int>>> distances){
     std::vector <Node*> root;
 
@@ -94,7 +120,8 @@ std::vector <Node*> build_tree(std::vector <Application*> apps, std::vector <std
     return root;
 
 }
-
+*/
+/*
 int create_new_node(std::vector <Node*> root, Application* a, Application* b){
     Node* new_node = new Node(a,b,distance(a,b));
     if(randomInt(1,1000)*0.1/100.0 < probability)
@@ -104,13 +131,11 @@ int create_new_node(std::vector <Node*> root, Application* a, Application* b){
         add_node(root[par],new_node);
     }
 }
-
-void print_node_right(Node* cur){
-    std::cout << cur->dist << " ";
-    if(cur->left)
-        print_node_right(cur->left);
-    if(cur->right)
-        print_node_right(cur->right);
+*/
+void print_node_right(Node* root){
+    std::cout << root->dist << " ";
+    for(auto ch:root->children)
+        print_node_right(ch);
 }
 
 void print_tree_right(std::vector <Node*> roots){
@@ -120,19 +145,34 @@ void print_tree_right(std::vector <Node*> roots){
     }
 }
 
-int depth(Node* cur){
-    if(cur == nullptr)
-        return 0;
-    if(cur->left == nullptr && cur->right == nullptr){
-        return 1;
-    }
-    return 1+std::max(depth(cur->left),depth(cur->right));
+void print_tree(Binary_Node *root, int depth = 0) {
+    if (!root)
+        return;
+    std::cout << '|';
+    for (int i = 0; i < depth; i++)
+        std::cout << '\t' << '|';
+    std::cout << root->dist << std::endl;
+    for(auto ch : root->children)
+        print_tree(ch,depth+1);
+
 }
 
-void delete_node_by_value(Node* cur, int val){
-    if(cur->dist == val){
-        if(cur->parent == nullptr) {
-            cur->right->parent = cur->left;
+int depth(Node* root){
+    if(root == nullptr)
+        return 0;
+    if(root->children.size() == 0){
+        return 1;
+    }
+    int maxDep = -1;
+    for(auto ch : root->children)
+        maxDep = std::max(maxDep,depth(ch));
+    return 1+maxDep;
+}
+
+void delete_node_by_value(Node* root, int val){
+    if(root->dist == val){
+        if(root->parent == nullptr) {
+            root->right->parent = root->left;
         }
     }
 }
@@ -146,31 +186,4 @@ void delete_root_by_value(Node* root, int val){
     else
         delete_node_by_value(root->right,val);
 }
-
-
-void print_tree(Node *root, int level = 0) {
-    if (!level) std::cout << "Tree:" << std::endl;
-    if (root != nullptr) {
-        std::cout << '|';
-        for (int i = 0; i < level; i++)
-            std::cout << '\t' << '|';
-        std::cout << root->dist << std::endl;
-        print_tree(root->left, level + 1);
-        print_tree(root->right, level + 1);
-    }
-}
-
-/*
-void print_node_tree(Node* cur, int d, int right){
-
-}
-
-void print_as_tree(std::vector <Node*> roots){
-    int n = roots.size();
-    std::queue <std::pair <Node*, int> Q;
-    for(int i = 0; i < n; i++){
-
-    }
-}
-*/
 
