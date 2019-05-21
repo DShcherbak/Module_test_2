@@ -56,9 +56,27 @@ std::vector <std::pair <int, std::pair <int,int>>> Task1(std::vector <Applicatio
 void Task2(){}
 void Task3(){}
 
-void Task4(std::vector <Application*> &apps, std::vector <std::pair <int, std::pair <int,int>>> distances){
+void Task4(){
+    std::vector <Application*> apps;
     std::cout << "Task 4:\n";
-    std::vector <Node*> roots = build_tree(apps);
+    int n = 20;
+    apps.resize(n);
+    for(int i = 0; i < n; i++){
+        apps[i] = create_random_application();
+    }
+    sort(apps,0,n-1);
+    print(apps);
+    Node* root = build_tree(apps);
+    int dep = depth(root);
+    std::cout << "Done. Depth is " << dep << "\n";
+    print_tree(root);
+    std::cout << "Now that you have seen the tree, we can search for values in it.\n";
+    std::cout << "Enter the value that is looked for:";
+    double val, eps;
+    std::cin >> val;
+    std::cout << "Enter the precision:";
+    std::cin >> eps;
+    search_precision(root,val-eps,val+eps);
 
 }
 
@@ -68,6 +86,6 @@ int main(){
     distances = Task1(apps);
     Task2();
     Task3();
-    Task4(apps,distances);
+    Task4();
     return 0;
 }

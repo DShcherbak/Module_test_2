@@ -5,13 +5,8 @@
 #include <algorithm>
 #include <queue>
 #include "Application.h"
-#define edge std::pair <int, std::pair <int,int>>
-#define from second.first
-#define to second.second
-#define cost first
 
 const double probability = 0.1;
-
 
 
 struct Node{
@@ -36,12 +31,11 @@ struct Node{
 };
 
 void add_node(Node* cur, Node* new_node){
-  //  std::cout << "Adding to " << cur->dist << std::endl;
     if(cur == nullptr){
         cur = new_node;
         return;
     }
-    if(cur->dist < new_node->dist){
+    if(cur < new_node){
         if(cur->right)
             add_node(cur->right,new_node);
         else{
@@ -60,36 +54,42 @@ void add_node(Node* cur, Node* new_node){
 
 }
 
-void random_shuffle(std::vector <edge> &e) {
-    std::random_device rd;
-    std::mt19937 g(rd());
+std::vector <Node*> build_tree(std::vector <Application*> apps){
+    std::vector <Node*> root;
 
-    std::shuffle(e.begin(), e.end(), g);
-}
-
-Node* build_tree(std::vector <Application*> apps){
     int n = apps.size();
-    std::cout << n << " elements.\n";
-    Node* root = new Node(apps[1],apps[0],distance(apps[1],apps[0]));
-    for(int i = 2; i < n; i++){
-        for(int j = 0; j < i; j++){
+    for(int i = 0; i <n; i++){
+        for(int j = 0; j < n; j++){
+            if(i==j)
+                continue;
             Node* new_node = new Node(apps[i],apps[j],distance(apps[i],apps[j]));
-            add_node(root,new_node);
+            if(randomInt(1,1000)*0.1/100.0 < probability)
+                root.push_back(new_node);
+            else{
+                int par = randomInt(0,root.size()-1);
+                add_node(root[par],new_node);
+            }
         }
     }
-    return root;
 }
 
+std::vector <Node*> build_tree(std::vector <Application*> apps, std::vector <std::pair <int, std::pair <int,int>>> distances){
+    std::vector <Node*> root;
 
-Node* build_tree(std::vector <Application*> apps, std::vector <edge> distances){
     int n = distances.size();
-    random_shuffle(distances);
-    edge p = distances[0];
-    Node* root = new Node(apps[p.from],apps[p.to],p.cost);
-    for(int i = 1; i <n; i++){
-        p = distances[i];
-        Node* new_node = new Node(apps[p.from],apps[p.to],p.cost);
-        add_node(root,new_node);
+    std::cout << "Size: " << n << std::endl;
+    for(int i = 0; i <n; i++){
+        std::pair <int, std::pair <int,int>> p = distances[i];
+        Node* new_node = new Node(apps[p.second.first],apps[p.second.second],p.first);
+        if(root.size() < 0 || randomInt(1,1000)*0.1/100.0 < probability) {
+            std::cout << "&" << i << std::endl;
+            root.push_back(new_node);
+        }
+        else{
+            std::cout << "^" << i << std::endl;
+            int par = randomInt(0,root.size()-1);
+            add_node(root[i],new_node);
+        }
     }
     return root;
 
@@ -155,9 +155,22 @@ void print_tree(Node *root, int level = 0) {
         for (int i = 0; i < level; i++)
             std::cout << '\t' << '|';
         std::cout << root->dist << std::endl;
-            print_tree(root->left, level + 1);
-            print_tree(root->right, level + 1);
+        print_tree(root->left, level + 1);
+        print_tree(root->right, level + 1);
     }
 }
 
+/*
+void print_node_tree(Node* cur, int d, int right){
+
+}
+
+void print_as_tree(std::vector <Node*> roots){
+    int n = roots.size();
+    std::queue <std::pair <Node*, int> Q;
+    for(int i = 0; i < n; i++){
+
+    }
+}
+*/
 
