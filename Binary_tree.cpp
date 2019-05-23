@@ -10,7 +10,7 @@
 #define to second.second
 #define cost first
 
-const double probability = 0.1;
+//const double probability = 0.1;
 
 
 

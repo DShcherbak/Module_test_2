@@ -3,6 +3,7 @@
 #include <cmath>
 #include <random>
 #include <algorithm>
+#include <iomanip>
 #include <queue> 
 #include "Application.h"
 
@@ -11,8 +12,8 @@ const double inf = 100000000.1;
 
 struct Graph{
     int vertices;
-    int adj[MAX_VERTICES][MAX_VERTICES];
-    int min_dist[MAX_VERTICES][MAX_VERTICES];
+    double adj[MAX_VERTICES][MAX_VERTICES];
+    double min_dist[MAX_VERTICES][MAX_VERTICES];
 
 
     Graph(std::vector <std::pair <int, std::pair <int,int>>> distances, int v, double threshold){
@@ -44,7 +45,7 @@ struct Graph{
             for (int j = 0; j < vertices; j++)
                 min_dist[i][j] = inf;
 
-
+        adj[0][0] = -1;
         for(int i = 1; i < vertices; i++) {
             for (int j = 0; j < vertices; j++) {
                 if(i > j)
@@ -68,12 +69,24 @@ struct Graph{
 
 };
 
+void print(Graph *G){
+    std::cout << "-----------------------\n";
+    for(int i = 0; i < G->vertices; i++){
+        for(int j = 0; j < G->vertices; j++){
+            std::cout << std::setw(6) << std::setprecision(4) << G->adj[i][j] << ' ';
+        }
+        std::cout << std::endl;
+    }
+    std::cout << "-----------------------\n";
+}
+
 void dfs_component(Graph* G, int cur, std::vector <bool> &visited){
     std::cout << cur << " ";
-    visited[cur] = 0;
-    for(int i = 0, n = G->vertices; i < n; i++)
+    visited[cur] = true;
+    for(int i = 0, n = G->vertices; i < n; i++){
         if(!visited[i] && G->adj[cur][i] != -1)
             dfs_component(G,i,visited);
+    }
 }
 
 void Dijkstra(Graph* G, int st){
